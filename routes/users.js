@@ -6,7 +6,7 @@ const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
 
 // Register
-router.post('/register', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const userExists = await User.findOne({ email });
@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });

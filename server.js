@@ -18,6 +18,10 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
+app.get('/', (req, res) => {
+    res.send('Job Finder API is running');
+  });
+
 app.use('/api/users', users);
 app.use('/api/jobs', jobs);
 app.use('/api/applications', applications);
