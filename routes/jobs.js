@@ -15,9 +15,10 @@ router.get('/', async (req, res) => {
 // Create a new job
 router.post('/', async (req, res) => {
   try {
-    const job = new Job(req.body);
-    await job.save();
-    res.status(201).json(job);
+    const { title, company, description, type, location, salary } = req.body;
+    const newJob = new Job({ title, company, description, type, location, salary });
+    const savedJob = await newJob.save();
+    res.status(201).json(savedJob);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -32,7 +33,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(job);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
