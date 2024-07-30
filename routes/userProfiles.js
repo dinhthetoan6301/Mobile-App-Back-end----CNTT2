@@ -18,24 +18,38 @@ router.get('/', protect, async (req, res) => {
 });
 
 // Create or update user profile
-router.post('/', protect, async (req, res) => {
+router.put('/', protect, async (req, res) => {
   try {
+    const { name, email, phoneNumber, address, company, avatar } = req.body;
     let userProfile = await UserProfile.findOne({ user: req.user._id });
     if (userProfile) {
       userProfile = await UserProfile.findOneAndUpdate(
         { user: req.user._id },
-        { $set: req.body },
+        { 
+          name,
+          email,
+          phoneNumber,
+          address,
+          company,
+          avatar
+        },
         { new: true }
       );
     } else {
       userProfile = new UserProfile({
         user: req.user._id,
-        ...req.body
+        name,
+        email,
+        phoneNumber,
+        address,
+        company,
+        avatar
       });
       await userProfile.save();
     }
     res.json(userProfile);
   } catch (error) {
+    console.error('Error updating user profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

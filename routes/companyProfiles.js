@@ -18,24 +18,42 @@ router.get('/', protect, async (req, res) => {
 });
 
 // Create or update company profile
-router.post('/', protect, async (req, res) => {
+router.put('/', protect, async (req, res) => {
   try {
+    const { companyName, logo, industry, companySize, founded, website, description, culture } = req.body;
     let companyProfile = await CompanyProfile.findOne({ user: req.user._id });
     if (companyProfile) {
       companyProfile = await CompanyProfile.findOneAndUpdate(
         { user: req.user._id },
-        { $set: req.body },
+        { 
+          companyName,
+          logo,
+          industry,
+          companySize,
+          founded,
+          website,
+          description,
+          culture
+        },
         { new: true }
       );
     } else {
       companyProfile = new CompanyProfile({
         user: req.user._id,
-        ...req.body
+        companyName,
+        logo,
+        industry,
+        companySize,
+        founded,
+        website,
+        description,
+        culture
       });
       await companyProfile.save();
     }
     res.json(companyProfile);
   } catch (error) {
+    console.error('Error updating company profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
