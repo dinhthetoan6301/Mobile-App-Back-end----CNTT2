@@ -5,6 +5,8 @@ const cors = require('cors');
 const users = require('./routes/users');
 const jobs = require('./routes/jobs');
 const applications = require('./routes/applications');
+const userProfiles = require('./routes/userProfiles');
+const companyProfiles = require('./routes/companyProfiles');
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.get('/', (req, res) => {
 app.use('/api/users', users);
 app.use('/api/jobs', jobs);
 app.use('/api/applications', applications);
+app.use('/api/user-profiles', userProfiles);
+app.use('/api/company-profiles', companyProfiles);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
