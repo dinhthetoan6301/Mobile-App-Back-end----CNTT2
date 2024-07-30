@@ -10,11 +10,10 @@ const CompanyProfileSchema = new mongoose.Schema({
   logo: String,
   industry: String,
   companySize: String,
-  founded: Date,
+  founded: String,
   website: String,
   description: String,
-  culture: String,
-  benefits: [String]
+  culture: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('CompanyProfile', CompanyProfileSchema);
