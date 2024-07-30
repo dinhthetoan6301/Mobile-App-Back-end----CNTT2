@@ -3,11 +3,40 @@ const router = express.Router();
 const Job = require('../models/Job');
 const { protect } = require('../middleware/authMiddleware');
 
-// Get all jobs
+// Get all jobs with search and filter
 router.get('/', async (req, res) => {
   try {
-    const jobs = await Job.find({});
+    const { search, industry, type, minSalary, maxSalary } = req.query;
+    let query = {};
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (industry) query.industry = industry;
+    if (type) query.type = type;
+    if (minSalary) query['salary.min'] = { $gte: parseInt(minSalary) };
+    if (maxSalary) query['salary.max'] = { $lte: parseInt(maxSalary) };
+
+    const jobs = await Job.find(query).sort({ createdAt: -1 });
     res.json(jobs);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Post a new job
+router.post('/', protect, async (req, res) => {
+  try {
+    const newJob = new Job({
+      ...req.body,
+      postedBy: req.user._id
+    });
+    const savedJob = await newJob.save();
+    res.status(201).json(savedJob);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -17,27 +46,20 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
-    if (job) {
-      res.json(job);
-    } else {
-      res.status(404).json({ message: 'Job not found' });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
     }
+    res.json(job);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Create a new job (protected route, only for employers)
-router.post('/', protect, async (req, res) => {
+router.get('/recent', async (req, res) => {
   try {
-    const { title, company, description } = req.body;
-    const job = await Job.create({
-      title,
-      company,
-      description,
-      postedBy: req.user._id,
-    });
-    res.status(201).json(job);
+    const limit = parseInt(req.query.limit) || 2;
+    const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(limit);
+    res.json(recentJobs);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
