@@ -38,7 +38,8 @@ router.post('/', protect, async (req, res) => {
     const savedJob = await newJob.save();
     res.status(201).json(savedJob);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error creating job:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
