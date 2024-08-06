@@ -66,4 +66,20 @@ router.get('/recent', async (req, res) => {
   }
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const { search } = req.query;
+    const jobs = await Job.find({
+      $or: [
+        { title: { $regex: search, $options: 'i' } },
+        { company: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ]
+    }).limit(10);
+    res.json(jobs);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 module.exports = router;
