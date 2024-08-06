@@ -62,7 +62,8 @@ router.get('/recent', async (req, res) => {
     const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(limit);
     res.json(recentJobs);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching recent jobs:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -78,8 +79,8 @@ router.get('/search', async (req, res) => {
     }).limit(10);
     res.json(jobs);
   } catch (error) {
+    console.error('Error searching jobs:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
-
 module.exports = router;

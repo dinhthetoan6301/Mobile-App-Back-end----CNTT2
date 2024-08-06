@@ -58,7 +58,17 @@ router.post('/signin', async (req, res) => {
 
 // Get user profile
 router.get('/profile', protect, async (req, res) => {
-  res.json(req.user);
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 const generateToken = (id) => {
