@@ -62,25 +62,8 @@ router.get('/recent', async (req, res) => {
     const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(limit);
     res.json(recentJobs);
   } catch (error) {
-    console.error('Error fetching recent jobs:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.get('/search', async (req, res) => {
-  try {
-    const { search } = req.query;
-    const jobs = await Job.find({
-      $or: [
-        { title: { $regex: search, $options: 'i' } },
-        { company: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
-      ]
-    }).limit(10);
-    res.json(jobs);
-  } catch (error) {
-    console.error('Error searching jobs:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
 module.exports = router;
