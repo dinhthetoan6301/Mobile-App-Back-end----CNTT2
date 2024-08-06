@@ -46,23 +46,25 @@ router.post('/', protect, async (req, res) => {
 // Get job by ID
 router.get('/:id', async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id);
+    const { id } = req.params;
+    console.log('Received job ID:', id);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log('Invalid job ID');
+      return res.status(400).json({ message: 'Invalid job ID' });
+    }
+
+    const job = await Job.findById(id);
     if (!job) {
+      console.log('Job not found');
       return res.status(404).json({ message: 'Job not found' });
     }
+
+    console.log('Job found:', job);
     res.json(job);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-router.get('/recent', async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 2;
-    const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(limit);
-    res.json(recentJobs);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching job:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
