@@ -3,6 +3,8 @@ const router = express.Router();
 const Job = require('../models/Job');
 const { protect } = require('../middleware/authMiddleware');
 
+console.log('Setting up users routes');
+
 // Get all jobs with search and filter
 router.get('/', async (req, res) => {
   try {

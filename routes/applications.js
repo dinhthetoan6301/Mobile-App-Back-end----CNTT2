@@ -10,6 +10,8 @@ const {
   getFeedback
 } = require('../controllers/applicationController');
 
+console.log('Setting up users routes');
+
 router.get('/', protect, getApplications);
 router.post('/', protect, createApplication);
 router.get('/:id/status', protect, getApplicationStatus);

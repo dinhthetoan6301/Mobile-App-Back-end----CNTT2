@@ -3,6 +3,8 @@ const router = express.Router();
 const CompanyProfile = require('../models/CompanyProfile');
 const { protect } = require('../middleware/authMiddleware');
 
+console.log('Setting up users routes');
+
 // Get company profile
 router.get('/', protect, async (req, res) => {
   try {

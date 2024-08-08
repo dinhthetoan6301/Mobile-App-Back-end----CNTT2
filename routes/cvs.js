@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
+
+console.log('Setting up users routes');
+
 const {
   uploadCV,
   getCVs,

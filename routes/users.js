@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
 
+console.log('Setting up users routes');
+
 // Register
 router.post('/signup', async (req, res) => {
   try {
