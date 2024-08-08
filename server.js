@@ -1,16 +1,14 @@
-console.log('Loading server.js');
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 console.log('Importing routes');
-const users = require('./routes/users');
-const jobs = require('./routes/jobs');
-const applications = require('./routes/applications');
-const userProfiles = require('./routes/userProfiles');
-const companyProfiles = require('./routes/companyProfiles');
+const usersRouter = require('./routes/users');
+const jobsRouter = require('./routes/jobs');
+const applicationsRouter = require('./routes/applications');
+const userProfilesRouter = require('./routes/userProfiles');
+const companyProfilesRouter = require('./routes/companyProfiles');
 
 console.log('Routes imported');
 
@@ -28,11 +26,11 @@ app.get('/', (req, res) => {
 });
 
 console.log('Setting up routes');
-app.use('/api/users', users);
-app.use('/api/jobs', jobs);
-app.use('/api/applications', applications);
-app.use('/api/user-profiles', userProfiles);
-app.use('/api/company-profiles', companyProfiles);
+app.use('/api/users', usersRouter);
+app.use('/api/jobs', jobsRouter);
+app.use('/api/applications', applicationsRouter);
+app.use('/api/user-profiles', userProfilesRouter);
+app.use('/api/company-profiles', companyProfilesRouter);
 console.log('Routes set up');
 
 const PORT = process.env.PORT || 5000;
