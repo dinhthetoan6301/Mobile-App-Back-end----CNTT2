@@ -7,6 +7,9 @@ const jobs = require('./routes/jobs');
 const applications = require('./routes/applications');
 const userProfiles = require('./routes/userProfiles');
 const companyProfiles = require('./routes/companyProfiles');
+const cvs = require('./routes/cvs');
+
+
 
 const app = express();
 
@@ -26,6 +29,7 @@ app.use('/api/jobs', jobs);
 app.use('/api/applications', applications);
 app.use('/api/user-profiles', userProfiles);
 app.use('/api/company-profiles', companyProfiles);
+app.use('/api/cvs', cvs);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
