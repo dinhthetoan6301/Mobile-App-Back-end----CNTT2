@@ -1,5 +1,5 @@
-const CV = require('../models/CV');
 const asyncHandler = require('express-async-handler');
+const CV = require('../models/CV');
 
 // @desc    Upload a new CV
 // @route   POST /api/cvs

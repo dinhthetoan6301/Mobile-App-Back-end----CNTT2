@@ -1,15 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-console.log('Importing routes');
-const usersRouter = require('./routes/users');
-const jobsRouter = require('./routes/jobs');
-const applicationsRouter = require('./routes/applications');
-const userProfilesRouter = require('./routes/userProfiles');
-const companyProfilesRouter = require('./routes/companyProfiles');
-
-console.log('Routes imported');
+const userRoutes = require('./routes/users');
+const jobRoutes = require('./routes/jobs');
+const applicationRoutes = require('./routes/applications');
+const userProfileRoutes = require('./routes/userProfiles');
+const companyProfileRoutes = require('./routes/companyProfiles');
+const cvRoutes = require('./routes/cvs');
 
 const app = express();
 
@@ -24,18 +22,12 @@ app.get('/', (req, res) => {
   res.send('Job Finder API is running');
 });
 
-console.log('Setting up routes');
-console.log('Users router:', usersRouter);
-app.use('/api/users', usersRouter);
-console.log('Jobs router:', jobsRouter);
-app.use('/api/jobs', jobsRouter);
-console.log('Applications router:', applicationsRouter);
-app.use('/api/applications', applicationsRouter);
-console.log('User profiles router:', userProfilesRouter);
-app.use('/api/user-profiles', userProfilesRouter);
-console.log('Company profiles router:', companyProfilesRouter);
-app.use('/api/company-profiles', companyProfilesRouter);
-console.log('Routes set up');
+app.use('/api/users', userRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/applications', applicationRoutes);
+app.use('/api/user-profiles', userProfileRoutes);
+app.use('/api/company-profiles', companyProfileRoutes);
+app.use('/api/cvs', cvRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

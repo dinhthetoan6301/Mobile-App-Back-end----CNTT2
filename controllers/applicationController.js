@@ -1,17 +1,6 @@
-const Application = require('../models/Application');
 const asyncHandler = require('express-async-handler');
+const Application = require('../models/Application');
 
-// @desc    Get all applications for a user
-// @route   GET /api/applications
-// @access  Private
-const getApplications = asyncHandler(async (req, res) => {
-    const applications = await Application.find({ applicant: req.user._id }).populate('job');
-    res.json(applications);
-});
-
-// @desc    Create a new application
-// @route   POST /api/applications
-// @access  Private
 const createApplication = asyncHandler(async (req, res) => {
   const { jobId, coverLetter } = req.body;
 
@@ -24,9 +13,11 @@ const createApplication = asyncHandler(async (req, res) => {
   res.status(201).json(application);
 });
 
-// @desc    Get application status
-// @route   GET /api/applications/:id/status
-// @access  Private
+const getApplications = asyncHandler(async (req, res) => {
+  const applications = await Application.find({ applicant: req.user._id }).populate('job');
+  res.json(applications);
+});
+
 const getApplicationStatus = asyncHandler(async (req, res) => {
   const application = await Application.findById(req.params.id);
 
@@ -37,18 +28,12 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
 
   if (application.applicant.toString() !== req.user._id.toString()) {
     res.status(401);
-    throw new Error('User not authorized');
+    throw new Error('Not authorized');
   }
 
-  res.json({
-    status: application.status,
-    detailedStatus: application.detailedStatus
-  });
+  res.json({ status: application.status, detailedStatus: application.detailedStatus });
 });
 
-// @desc    Update application status
-// @route   PUT /api/applications/:id/status
-// @access  Private
 const updateApplicationStatus = asyncHandler(async (req, res) => {
   const { status, detailedStatus } = req.body;
 
@@ -59,11 +44,9 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     throw new Error('Application not found');
   }
 
-  // Only allow the employer (job poster) to update the status
-  // You might need to adjust this check based on your auth setup
   if (application.job.postedBy.toString() !== req.user._id.toString()) {
     res.status(401);
-    throw new Error('User not authorized');
+    throw new Error('Not authorized');
   }
 
   application.status = status || application.status;
@@ -74,9 +57,6 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
   res.json(updatedApplication);
 });
 
-// @desc    Add feedback to an application
-// @route   POST /api/applications/:id/feedback
-// @access  Private
 const addFeedback = asyncHandler(async (req, res) => {
   const { text, from } = req.body;
 
@@ -87,25 +67,21 @@ const addFeedback = asyncHandler(async (req, res) => {
     throw new Error('Application not found');
   }
 
-  // Check if the user is authorized to add feedback
   if (
-    (from === 'Employer' && application.job.postedBy.toString() !== req.user._id.toString()) ||
-    (from === 'Applicant' && application.applicant.toString() !== req.user._id.toString())
+    (from === 'employer' && application.job.postedBy.toString() !== req.user._id.toString()) ||
+    (from === 'applicant' && application.applicant.toString() !== req.user._id.toString())
   ) {
     res.status(401);
-    throw new Error('User not authorized');
+    throw new Error('Not authorized');
   }
 
-  application.feedback.push({ from, text });
+  application.feedback.push({ text, from });
 
-  const updatedApplication = await application.save();
+  await application.save();
 
-  res.json(updatedApplication.feedback);
+  res.status(201).json(application.feedback);
 });
 
-// @desc    Get feedback for an application
-// @route   GET /api/applications/:id/feedback
-// @access  Private
 const getFeedback = asyncHandler(async (req, res) => {
   const application = await Application.findById(req.params.id);
 
@@ -114,23 +90,22 @@ const getFeedback = asyncHandler(async (req, res) => {
     throw new Error('Application not found');
   }
 
-  // Check if the user is authorized to view feedback
   if (
     application.applicant.toString() !== req.user._id.toString() &&
     application.job.postedBy.toString() !== req.user._id.toString()
   ) {
     res.status(401);
-    throw new Error('User not authorized');
+    throw new Error('Not authorized');
   }
 
   res.json(application.feedback);
 });
 
 module.exports = {
-    getApplications,
-    createApplication,
-    getApplicationStatus,
-    updateApplicationStatus,
-    addFeedback,
-    getFeedback
+  createApplication,
+  getApplications,
+  getApplicationStatus,
+  updateApplicationStatus,
+  addFeedback,
+  getFeedback
 };

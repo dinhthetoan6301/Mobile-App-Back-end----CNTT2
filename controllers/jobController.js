@@ -1,52 +1,21 @@
 const asyncHandler = require('express-async-handler');
 const Job = require('../models/Job');
 
-// @desc    Get all jobs
-// @route   GET /api/jobs
-// @access  Public
 const getJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({});
   res.json(jobs);
 });
 
-// @desc    Create a new job
-// @route   POST /api/jobs
-// @access  Private
 const createJob = asyncHandler(async (req, res) => {
-  const {
-    title,
-    company,
-    description,
-    requirements,
-    salary,
-    location,
-    type,
-    industry
-  } = req.body;
-
-  const job = await Job.create({
-    title,
-    company,
-    description,
-    requirements,
-    salary,
-    location,
-    type,
-    industry,
+  const job = new Job({
+    ...req.body,
     postedBy: req.user._id
   });
 
-  if (job) {
-    res.status(201).json(job);
-  } else {
-    res.status(400);
-    throw new Error('Invalid job data');
-  }
+  const createdJob = await job.save();
+  res.status(201).json(createdJob);
 });
 
-// @desc    Get job by ID
-// @route   GET /api/jobs/:id
-// @access  Public
 const getJobById = asyncHandler(async (req, res) => {
   const job = await Job.findById(req.params.id);
   if (job) {
@@ -57,4 +26,9 @@ const getJobById = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getJobs, createJob, getJobById };
+const getRecentJobs = asyncHandler(async (req, res) => {
+  const jobs = await Job.find({}).sort({ createdAt: -1 }).limit(5);
+  res.json(jobs);
+});
+
+module.exports = { getJobs, createJob, getJobById, getRecentJobs };
