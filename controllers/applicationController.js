@@ -1,7 +1,28 @@
 const Application = require('../models/Application');
 const asyncHandler = require('express-async-handler');
 
-// Existing functions (getApplications, createApplication) remain the same
+// @desc    Get all applications for a user
+// @route   GET /api/applications
+// @access  Private
+const getApplications = asyncHandler(async (req, res) => {
+  const applications = await Application.find({ applicant: req.user._id }).populate('job');
+  res.json(applications);
+});
+
+// @desc    Create a new application
+// @route   POST /api/applications
+// @access  Private
+const createApplication = asyncHandler(async (req, res) => {
+  const { jobId, coverLetter } = req.body;
+
+  const application = await Application.create({
+    job: jobId,
+    applicant: req.user._id,
+    coverLetter,
+  });
+
+  res.status(201).json(application);
+});
 
 // @desc    Get application status
 // @route   GET /api/applications/:id/status
@@ -14,7 +35,6 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
     throw new Error('Application not found');
   }
 
-  // Check if the user is authorized to view this application
   if (application.applicant.toString() !== req.user._id.toString()) {
     res.status(401);
     throw new Error('User not authorized');
