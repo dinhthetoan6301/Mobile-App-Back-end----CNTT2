@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -26,10 +25,15 @@ app.get('/', (req, res) => {
 });
 
 console.log('Setting up routes');
+console.log('Users router:', usersRouter);
 app.use('/api/users', usersRouter);
+console.log('Jobs router:', jobsRouter);
 app.use('/api/jobs', jobsRouter);
+console.log('Applications router:', applicationsRouter);
 app.use('/api/applications', applicationsRouter);
+console.log('User profiles router:', userProfilesRouter);
 app.use('/api/user-profiles', userProfilesRouter);
+console.log('Company profiles router:', companyProfilesRouter);
 app.use('/api/company-profiles', companyProfilesRouter);
 console.log('Routes set up');
 
