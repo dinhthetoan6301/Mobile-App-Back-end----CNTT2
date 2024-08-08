@@ -3,8 +3,7 @@ const router = express.Router();
 const { getJobs, createJob, getJobById } = require('../controllers/jobController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.get('/', getJobs);
-router.post('/', protect, createJob);
-router.get('/:id', getJobById);
+router.route('/').get(getJobs).post(protect, createJob);
+router.route('/:id').get(getJobById);
 
 module.exports = router;
