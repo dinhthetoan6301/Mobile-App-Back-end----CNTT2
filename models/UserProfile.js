@@ -6,12 +6,26 @@ const UserProfileSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  name: String,
-  email: String,
-  phoneNumber: String,
-  address: String,
-  company: String,
-  avatar: String
+  bio: String,
+  location: String,
+  skills: [String],
+  experience: [{
+    title: String,
+    company: String,
+    from: Date,
+    to: Date,
+    current: Boolean,
+    description: String
+  }],
+  education: [{
+    school: String,
+    degree: String,
+    fieldOfStudy: String,
+    from: Date,
+    to: Date,
+    current: Boolean,
+    description: String
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('UserProfile', UserProfileSchema);
