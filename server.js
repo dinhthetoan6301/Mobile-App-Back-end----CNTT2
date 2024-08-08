@@ -9,6 +9,7 @@ const userProfileRoutes = require('./routes/userProfiles');
 const companyProfileRoutes = require('./routes/companyProfiles');
 const cvRoutes = require('./routes/cvs');
 
+
 const app = express();
 
 app.use(cors());
