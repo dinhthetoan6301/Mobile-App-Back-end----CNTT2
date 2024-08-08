@@ -5,8 +5,8 @@ const asyncHandler = require('express-async-handler');
 // @route   GET /api/applications
 // @access  Private
 const getApplications = asyncHandler(async (req, res) => {
-  const applications = await Application.find({ applicant: req.user._id }).populate('job');
-  res.json(applications);
+    const applications = await Application.find({ applicant: req.user._id }).populate('job');
+    res.json(applications);
 });
 
 // @desc    Create a new application
@@ -127,10 +127,10 @@ const getFeedback = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  getApplications,
-  createApplication,
-  getApplicationStatus,
-  updateApplicationStatus,
-  addFeedback,
-  getFeedback
+    getApplications,
+    createApplication,
+    getApplicationStatus,
+    updateApplicationStatus,
+    addFeedback,
+    getFeedback
 };
