@@ -28,4 +28,5 @@ const UserProfileSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-module.exports = mongoose.model('UserProfile', UserProfileSchema);
+// Check if the model already exists before creating it
+module.exports = mongoose.models.UserProfile || mongoose.model('UserProfile', UserProfileSchema);
