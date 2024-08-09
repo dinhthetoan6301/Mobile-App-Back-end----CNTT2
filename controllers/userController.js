@@ -39,19 +39,29 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log('Login attempt for:', email);
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
+    console.log('User found:', user ? 'Yes' : 'No');
 
-  if (user && (await user.matchPassword(password))) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
-    });
-  } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+    if (user && (await user.matchPassword(password))) {
+      console.log('Password matched');
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      });
+    } else {
+      console.log('Invalid credentials');
+      res.status(401);
+      throw new Error('Invalid email or password');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500);
+    throw new Error('Server error during login');
   }
 });
 
