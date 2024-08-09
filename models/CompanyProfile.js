@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const CompanyProfileSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
