@@ -41,6 +41,7 @@ router.post('/signin', async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user._id),
       });
     } else {
@@ -54,6 +55,21 @@ router.post('/signin', async (req, res) => {
 // Get user profile
 router.get('/profile', protect, async (req, res) => {
   res.json(req.user);
+});
+
+// Update user role
+router.put('/:id/role', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.role = req.body.role;
+    await user.save();
+    res.json({ message: 'User role updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 const generateToken = (id) => {
