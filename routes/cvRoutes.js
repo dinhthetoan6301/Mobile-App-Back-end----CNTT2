@@ -37,9 +37,16 @@ const upload = multer({
 
 // Upload CV
 router.post('/upload', protect, upload.single('cv'), async (req, res) => {
+  console.log('File upload request received');
+  console.log('Request headers:', req.headers);
+  console.log('Request body:', req.body);
+  
   if (!req.file) {
+    console.log('No file received');
     return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
+
+  console.log('File received:', req.file);
 
   try {
     const newCV = new CV({
@@ -48,12 +55,15 @@ router.post('/upload', protect, upload.single('cv'), async (req, res) => {
       path: req.file.path
     });
 
+    console.log('Saving new CV:', newCV);
     await newCV.save();
 
+    console.log('Updating user with new CV');
     await User.findByIdAndUpdate(req.user._id, {
       $push: { cvs: newCV._id }
     });
 
+    console.log('CV upload successful');
     res.status(200).json({
       success: true,
       message: 'CV uploaded successfully',
@@ -64,7 +74,7 @@ router.post('/upload', protect, upload.single('cv'), async (req, res) => {
     });
   } catch (error) {
     console.error('Error uploading CV:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
   }
 });
 
