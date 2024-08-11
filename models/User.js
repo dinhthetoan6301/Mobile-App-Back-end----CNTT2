@@ -22,11 +22,14 @@ const UserSchema = new mongoose.Schema({
   dateOfBirth: Date,
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
-    required: true
+    enum: ['male', 'female', 'other']
   },
   bio: String,
-  phone: String
+  phone: String,
+  cvs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CV'
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);
