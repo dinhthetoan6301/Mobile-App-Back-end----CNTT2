@@ -46,15 +46,12 @@ router.post('/', protect, async (req, res) => {
 // Get jobs posted by the current user
 router.get('/posted', protect, async (req, res) => {
   try {
-    console.log('Fetching posted jobs for user:', req.user._id);
-    
-    const postedJobs = await Job.find({ postedBy: req.user._id }).sort({ createdAt: -1 });
-    console.log('Posted jobs found:', postedJobs.length);
-    
+    console.log('User:', req.user); // Log user info for debugging
+    const postedJobs = await Job.find({ postedBy: req.user._id });
     res.json(postedJobs);
   } catch (error) {
     console.error('Error fetching posted jobs:', error);
-    res.status(500).json({ message: 'Server error', error: error.toString() });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
