@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const cors = require('cors');
 const users = require('./routes/users');
 const jobs = require('./routes/jobs');
@@ -9,6 +10,7 @@ const userProfiles = require('./routes/userProfiles');
 const companyProfiles = require('./routes/companyProfiles');
 const cvRoutes = require('./routes/cvRoutes');
 
+dotenv.config();
 
 const app = express();
 

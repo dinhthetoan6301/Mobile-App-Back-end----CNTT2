@@ -71,4 +71,22 @@ router.get('/recent', async (req, res) => {
 });
 
 
+router.get('/:id/candidates', protect, async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    // Ensure the user is the employer who posted the job
+    if (job.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to view candidates for this job' });
+    }
+    const applications = await Application.find({ job: req.params.id }).populate('applicant');
+    res.json(applications);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching candidates', error: error.message });
+  }
+});
+
+
 module.exports = router;
