@@ -47,6 +47,21 @@ router.put('/:id/status', protect, async (req, res) => {
   }
 });
 
+router.get('/applied', protect, async (req, res) => {
+  try {
+    console.log('Fetching applied jobs for user:', req.user._id);
+
+    const appliedJobs = await Application.find({ applicant: req.user._id })
+      .populate('job')
+      .sort({ createdAt: -1 });
+
+    console.log('Applied jobs found:', appliedJobs.length);
+    res.json(appliedJobs);
+  } catch (error) {
+    console.error('Error fetching applied jobs:', error);
+    res.status(500).json({ message: 'Server error', error: error.toString() });
+  }
+});
 
 
 module.exports = router;

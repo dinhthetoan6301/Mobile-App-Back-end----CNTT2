@@ -56,13 +56,19 @@ router.get('/:id', async (req, res) => {
 router.get('/recent', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 2;
-    const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(limit);
+    console.log('Fetching recent jobs with limit:', limit);
+
+    const recentJobs = await Job.find()
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    console.log('Recent jobs found:', recentJobs.length);
     res.json(recentJobs);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching recent jobs:', error);
+    res.status(500).json({ message: 'Server error', error: error.toString() });
   }
 });
-
 
 
 module.exports = router;
