@@ -88,5 +88,21 @@ router.get('/:id/candidates', protect, async (req, res) => {
   }
 });
 
+router.get('/posted', protect, async (req, res) => {
+  try {
+    console.log('User object:', req.user);
+    console.log('User ID:', req.user._id);
+    
+    const postedJobs = await Job.find({ postedBy: req.user._id });
+    console.log('Query:', { postedBy: req.user._id });
+    console.log('Posted jobs:', postedJobs);
+    
+    res.json(postedJobs);
+  } catch (error) {
+    console.error('Detailed error in /jobs/posted:', error);
+    res.status(500).json({ message: 'Server error', error: error.toString(), stack: error.stack });
+  }
+});
+
 
 module.exports = router;
