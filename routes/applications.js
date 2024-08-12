@@ -47,32 +47,6 @@ router.put('/:id/status', protect, async (req, res) => {
   }
 });
 
-router.get('/:id/candidates', protect, async (req, res) => {
-  try {
-    console.log('Fetching candidates for job:', req.params.id);
-    console.log('User:', req.user);
 
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-      console.log('Job not found');
-      return res.status(404).json({ message: 'Job not found' });
-    }
-
-    console.log('Job found:', job);
-
-    if (job.postedBy.toString() !== req.user._id.toString()) {
-      console.log('User not authorized. Job postedBy:', job.postedBy, 'User ID:', req.user._id);
-      return res.status(403).json({ message: 'Not authorized to view candidates for this job' });
-    }
-
-    const applications = await Application.find({ job: req.params.id }).populate('applicant');
-    console.log('Applications found:', applications);
-
-    res.json(applications);
-  } catch (error) {
-    console.error('Detailed error in /:id/candidates:', error);
-    res.status(500).json({ message: 'Server error', error: error.toString(), stack: error.stack });
-  }
-});
 
 module.exports = router;
