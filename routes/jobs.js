@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Job = require('../models/Job');
+const Application = require('../models/Application');
 const { protect } = require('../middleware/authMiddleware');
 
 // Get all jobs with search and filter
@@ -18,10 +19,12 @@ router.get('/', async (req, res) => {
     if (type) query.type = type;
     if (minSalary) query['salary.min'] = { $gte: parseInt(minSalary) };
     if (maxSalary) query['salary.max'] = { $lte: parseInt(maxSalary) };
+    
     const jobs = await Job.find(query).sort({ createdAt: -1 });
     res.json(jobs);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -49,10 +52,12 @@ router.get('/:id', async (req, res) => {
     }
     res.json(job);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching job by ID:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
+// Get recent jobs
 router.get('/recent', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 2;
@@ -70,39 +75,37 @@ router.get('/recent', async (req, res) => {
   }
 });
 
-
+// Get candidates for a specific job
 router.get('/:id/candidates', protect, async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
-    // Ensure the user is the employer who posted the job
     if (job.postedBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to view candidates for this job' });
     }
     const applications = await Application.find({ job: req.params.id }).populate('applicant');
     res.json(applications);
   } catch (error) {
+    console.error('Error fetching candidates:', error);
     res.status(500).json({ message: 'Error fetching candidates', error: error.message });
   }
 });
 
+// Get jobs posted by the current user
 router.get('/posted', protect, async (req, res) => {
   try {
-    console.log('User object:', req.user);
-    console.log('User ID:', req.user._id);
+    console.log('Fetching posted jobs for user:', req.user._id);
     
-    const postedJobs = await Job.find({ postedBy: req.user._id });
-    console.log('Query:', { postedBy: req.user._id });
-    console.log('Posted jobs:', postedJobs);
+    const postedJobs = await Job.find({ postedBy: req.user._id }).sort({ createdAt: -1 });
+    console.log('Posted jobs found:', postedJobs.length);
     
     res.json(postedJobs);
   } catch (error) {
-    console.error('Detailed error in /jobs/posted:', error);
+    console.error('Error fetching posted jobs:', error);
     res.status(500).json({ message: 'Server error', error: error.toString(), stack: error.stack });
   }
 });
-
 
 module.exports = router;
