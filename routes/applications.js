@@ -22,10 +22,14 @@ router.post('/', protect, async (req, res) => {
 // Get application status for a user
 router.get('/status', protect, async (req, res) => {
   try {
-    const applications = await Application.find({ applicant: req.user._id }).populate('job');
+    const applications = await Application.find({ applicant: req.user._id })
+      .populate('job', 'title company')  // Populate chỉ lấy title và company của job
+      .sort({ appliedDate: -1 });  // Sắp xếp theo ngày apply, mới nhất lên đầu
+    
     res.json(applications);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching applications', error: error.message });
+    console.error('Error fetching application status:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
