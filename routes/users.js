@@ -3,8 +3,6 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const { protect } = require('../middleware/authMiddleware');
 
 // Register
@@ -56,40 +54,6 @@ router.post('/signin', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
-  }
-});
-
-router.post('/google-signin', async (req, res) => {
-  try {
-    const { token } = req.body;
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { email, name, picture } = payload;
-
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = new User({
-        name,
-        email,
-        password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-        role: 'jobseeker', // default role, can be changed later
-        picture
-      });
-      await user.save();
-    }
-
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id),
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
