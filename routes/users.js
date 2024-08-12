@@ -57,12 +57,7 @@ router.post('/signin', async (req, res) => {
 
 // Get user profile
 router.get('/profile', protect, async (req, res) => {
-  try {
-  
-    res.json(req.user);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
+  res.json(req.user);
 });
 
 // Update user role
