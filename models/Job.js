@@ -18,7 +18,8 @@ const JobSchema = new mongoose.Schema({
   industry: String,
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   applicationDeadline: Date
 }, { timestamps: true });

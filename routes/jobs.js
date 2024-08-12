@@ -40,6 +40,23 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+router.get('/posted', protect, async (req, res) => {
+  try {
+    // Thêm log để debug
+    console.log('User ID:', req.user._id);
+    
+    const jobs = await Job.find({ postedBy: req.user._id });
+    
+    // Log số lượng jobs tìm thấy
+    console.log('Number of jobs found:', jobs.length);
+    
+    res.json(jobs);
+  } catch (error) {
+    console.error('Error in /jobs/posted:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // Get job by ID
 router.get('/:id', async (req, res) => {
   try {
