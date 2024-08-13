@@ -54,16 +54,19 @@ router.put('/:id/status', protect, async (req, res) => {
   try {
     const { status } = req.body;
     const application = await Application.findById(req.params.id);
+    
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
+    
     // Here you might want to add a check to ensure the user is the employer who posted the job
+    
     application.status = status;
     await application.save();
+    
     res.json({ message: 'Application status updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error updating application status', error: error.message });
   }
 });
-
 module.exports = router;

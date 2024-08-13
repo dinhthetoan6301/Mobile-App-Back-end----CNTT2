@@ -76,16 +76,18 @@ router.get('/recent', async (req, res) => {
   }
 });
 
-// Get candidates for a specific job
 router.get('/:id/candidates', protect, async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
+    
+    // Check if the current user is the one who posted the job
     if (job.postedBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to view candidates for this job' });
     }
+    
     const applications = await Application.find({ job: req.params.id }).populate('applicant');
     res.json(applications);
   } catch (error) {
