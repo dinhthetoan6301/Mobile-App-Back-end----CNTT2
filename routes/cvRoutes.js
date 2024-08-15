@@ -8,7 +8,6 @@ const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Cấu hình multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = 'uploads/cvs/';
@@ -31,11 +30,11 @@ const upload = multer({
     cb(null, true);
   },
   limits: {
-    fileSize: 5 * 1024 * 1024 // Limit file size to 5MB
+    fileSize: 5 * 1024 * 1024 
   }
 });
 
-// Upload CV
+
 router.post('/upload', protect, upload.single('cv'), async (req, res) => {
   console.log('File upload request received');
   console.log('Request headers:', req.headers);
@@ -78,7 +77,6 @@ router.post('/upload', protect, upload.single('cv'), async (req, res) => {
   }
 });
 
-// Get user's CVs
 router.get('/', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('cvs');
@@ -89,7 +87,7 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
-// Delete CV
+
 router.delete('/:id', protect, async (req, res) => {
   try {
     const cv = await CV.findById(req.params.id);
@@ -98,21 +96,19 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'CV not found' });
     }
 
-    // Check user
+   
     if (cv.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
-    // Delete file from server
     fs.unlink(cv.path, async (err) => {
       if (err) {
         console.error('Error deleting file:', err);
       }
       
-      // Remove CV from database
+     
       await cv.remove();
 
-      // Remove CV reference from user
       await User.findByIdAndUpdate(req.user._id, {
         $pull: { cvs: req.params.id }
       });
